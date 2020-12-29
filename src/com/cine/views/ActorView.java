@@ -7,9 +7,11 @@ package com.cine.views;
 
 import com.cine.entities.Actor;
 import com.cine.manager.ActorManager;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -18,11 +20,40 @@ import javax.swing.JOptionPane;
 public class ActorView extends javax.swing.JFrame {
     Actor actor;
     ActorManager actManager;
+    List<Actor> lstActores;
+    DefaultTableModel modelo;
     
     public ActorView() {
         initComponents();
+        listarActores();
     }
-
+    
+    private void llenarTabla(){
+        modelo = new DefaultTableModel();
+        modelo.addColumn("Nombre");
+        modelo.addColumn("Apellido");
+        modelo.addColumn("Pais");
+        tblActores.setModel(modelo);
+    }
+    
+    private void listarActores(){
+        llenarTabla();
+        try{
+            actManager = new ActorManager();
+            lstActores = actManager.getListaActores();
+            lstActores.forEach(act->{
+                
+                Object [] obj = new Object[3];
+                obj[0] = act.getNombre();
+                obj[1] = act.getApellido();
+                obj[2] = act.getPais();
+               modelo.addRow(obj);
+                
+            });
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -38,9 +69,11 @@ public class ActorView extends javax.swing.JFrame {
         btnGuardar = new javax.swing.JButton();
         cmbPais = new javax.swing.JComboBox<>();
         btnActualizar = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblActores = new javax.swing.JTable();
+        btnSeleccionar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Vista actores");
@@ -60,7 +93,6 @@ public class ActorView extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel4.setText("Pais");
 
-        btnGuardar.setBackground(new java.awt.Color(255, 51, 0));
         btnGuardar.setText("Guardar");
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -70,8 +102,19 @@ public class ActorView extends javax.swing.JFrame {
 
         cmbPais.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ecuador", "EEUU", "Alemania", "Bolivia" }));
 
-        btnActualizar.setBackground(new java.awt.Color(255, 51, 0));
         btnActualizar.setText("Actualizar");
+        btnActualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnActualizarActionPerformed(evt);
+            }
+        });
+
+        btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -93,10 +136,11 @@ public class ActorView extends javax.swing.JFrame {
                             .addComponent(txtApellido, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
                             .addComponent(cmbPais, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(107, 107, 107)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(94, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnGuardar, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+                    .addComponent(btnActualizar, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+                    .addComponent(btnEliminar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -114,7 +158,8 @@ public class ActorView extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(cmbPais, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cmbPais, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnEliminar))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
 
@@ -133,17 +178,30 @@ public class ActorView extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tblActores);
 
+        btnSeleccionar.setText("Seleccionar");
+        btnSeleccionar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSeleccionarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 573, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnSeleccionar, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(60, 60, 60)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(10, 10, 10)
+                .addComponent(btnSeleccionar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -195,6 +253,7 @@ public class ActorView extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Datos guardados con exito");
                 txtNombre.setText("");
                 txtApellido.setText("");
+                this.listarActores();
             } catch (Exception ex) {
                 Logger.getLogger(ActorView.class.getName()).log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(null, "Problemas al guardar los datos");
@@ -204,6 +263,43 @@ public class ActorView extends javax.swing.JFrame {
        
         
     }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
+        // TODO add your handling code here:
+        actManager = new ActorManager();
+        actor.setNombre(txtNombre.getText());
+        actor.setApellido(txtApellido.getText());
+        actor.setPais((String) cmbPais.getSelectedItem());
+        try {
+            actManager.actualizarActor(actor);
+            this.listarActores();
+              JOptionPane.showMessageDialog(null, "Informacion actualizada");
+              txtNombre.setText("");
+              txtApellido.setText("");
+              cmbPais.setEditable(false);
+        } catch (Exception ex) {
+            Logger.getLogger(ActorView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnActualizarActionPerformed
+
+    private void btnSeleccionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSeleccionarActionPerformed
+        actor = lstActores.get(tblActores.getSelectedRow());
+        txtNombre.setText(actor.getNombre());
+        txtApellido.setText(actor.getApellido());
+        cmbPais.setEditable(true);
+    }//GEN-LAST:event_btnSeleccionarActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        try {
+            actor = lstActores.get(tblActores.getSelectedRow());
+            actManager = new ActorManager();
+            actManager.eliminarActor(actor.getId());
+            JOptionPane.showMessageDialog(null, "Informacion eliminada con exito");
+            modelo.removeRow(tblActores.getSelectedRow());
+        } catch (Exception ex) {
+            Logger.getLogger(ActorView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnEliminarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -234,16 +330,16 @@ public class ActorView extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ActorView().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new ActorView().setVisible(true);
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActualizar;
+    private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnGuardar;
+    private javax.swing.JButton btnSeleccionar;
     private javax.swing.JComboBox<String> cmbPais;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
